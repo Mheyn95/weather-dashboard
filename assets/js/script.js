@@ -1,5 +1,5 @@
 // get data from open weather api
-var getCityWeather = function (city) {
+var getCity = function (city) {
   var cityName = city;
   var apiUrl =
     "https://api.openweathermap.org/data/2.5/weather?q=" +
@@ -10,16 +10,83 @@ var getCityWeather = function (city) {
       // request was successful
       if (response.ok) {
         response.json().then(function (data) {
-          console.log(data);
+          // create obj with data we will need for other fetches
           cityName = data.name;
+          var latLon = {
+            lat: data.coord.lat,
+            lon: data.coord.lon,
+            name: data.name,
+          };
+          uvIndexFunc(latLon);
         });
+        addLi(cityName);
       } else {
         alert("Error: " + response.statusText);
+        return;
       }
     })
     .catch(function (error) {
       alert("Unable to connect to Open Weather");
     });
+};
+
+// get data for UV index
+var uvIndexFunc = function (latLon) {
+  var apiUrl =
+    "http://api.openweathermap.org/data/2.5/uvi?lat=" +
+    latLon.lat +
+    "&lon=" +
+    latLon.lon +
+    "&appid=2917f972769da991046e2c6ed6581b39";
+  fetch(apiUrl)
+    .then(function (response) {
+      // request was successful
+      if (response.ok) {
+        response.json().then(function (data) {
+          var nextData = {
+            uvIndex: data.value,
+            lat: latLon.lat,
+            lon: latLon.lon,
+            name: latLon.name,
+          };
+          weatherData(nextData);
+        });
+      } else {
+        alert("Error: " + response.statusText);
+        return;
+      }
+    })
+    .catch(function (error) {
+      alert("Unable to connect to Open Weather");
+    });
+};
+// get all weather data
+var weatherData = function (passedData) {
+  var apiUrl =
+    "https://api.openweathermap.org/data/2.5/onecall?lat=" +
+    passedData.lat +
+    "&lon=" +
+    passedData.lon +
+    "&exclude=minutely,hourly,alerts&units=imperial&appid=2917f972769da991046e2c6ed6581b39";
+  fetch(apiUrl)
+    .then(function (response) {
+      // request was successful
+      if (response.ok) {
+        response.json().then(function (data) {
+          console.log(data);
+          console.log(passedData.name);
+        });
+      } else {
+        alert("Error: " + response.statusText);
+        return;
+      }
+    })
+    .catch(function (error) {
+      alert("Unable to connect to Open Weather");
+    });
+};
+// add to history list
+var addLi = function (cityName) {
   // get array of current history
   var currentHistory = [];
   $(".search-history li").each(function () {
@@ -50,7 +117,7 @@ var loadHistory = function () {
   // append history onto page
   for (i = 0; i < history.length; i++) {
     var listEl = document.createElement("li");
-    listEl.classList = "list-group-item";
+    listEl.classList = "list-group-item p-3 mb-2";
     listEl.setAttribute("data-city", history[i]);
     listEl.textContent = history[i];
     $(".search-history").append(listEl);
@@ -71,14 +138,13 @@ var saveHistory = function () {
   });
   //remove duplicates
   historyArr = [...new Set(historyArr)];
-  console.log(historyArr);
   // push array into localstorage
   localStorage.setItem("history", JSON.stringify(historyArr));
 };
 
 // send text entry from client to weather api as a city
 $("#button-addon2").on("click", function () {
-  var cityName = $(".form-control").val();
+  var cityName = $(".form-control").val().trim();
   // check if the city name is blank or not
   if (cityName) {
     // convert the name to to be lower case with the first letter uppercase
@@ -88,7 +154,7 @@ $("#button-addon2").on("click", function () {
     //clear the text box
     $(".form-control").val("");
     // call the function to fetch the api with the city name we passed in
-    getCityWeather(cityName);
+    getCity(cityName);
   } else {
     alert("Please enter a city name!");
     return;
@@ -104,7 +170,7 @@ $("#remove-history").on("click", function () {
 // click a list element to pass that as a city to the weather api
 $("body").on("click", ".list-group-item", function () {
   var cityName = $(this).attr("data-city");
-  getCityWeather(cityName);
+  getCity(cityName);
 });
 // load history list from local storage on page load
 loadHistory();
