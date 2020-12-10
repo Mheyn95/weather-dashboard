@@ -29,7 +29,7 @@ var getCityWeather = function (city) {
   // add the city name to our history list if it is not already there
   if (currentHistory.includes(cityName) === false) {
     var listEl = document.createElement("li");
-    listEl.classList = "list-group-item";
+    listEl.classList = "list-group-item p-3 mb-2";
     listEl.setAttribute("data-city", cityName);
     listEl.textContent = cityName;
     $(".search-history").append(listEl);
@@ -93,6 +93,12 @@ $("#button-addon2").on("click", function () {
     alert("Please enter a city name!");
     return;
   }
+});
+
+// on click remove the li elements from page and clear storage
+$("#remove-history").on("click", function () {
+  $(".search-history").empty();
+  saveHistory();
 });
 
 // click a list element to pass that as a city to the weather api

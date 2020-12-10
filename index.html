@@ -7,6 +7,12 @@
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     />
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+      integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf"
+      crossorigin="anonymous"
+    />
     <link rel="stylesheet" href="./assets/style/style.css" />
     <title>Weather Dashboard</title>
   </head>
@@ -28,11 +34,20 @@
               aria-describedby="button-addon2"
             />
             <button class="btn btn-primary" type="button" id="button-addon2">
-              Search
+              <i class="fas fa-search"></i>
             </button>
           </div>
-          <div class="search-history"></div>
         </form>
+        <div class="search-history"></div>
+        <div>
+          <button
+            class="btn btn-warning p-3 mb-2"
+            type="button"
+            id="remove-history"
+          >
+            Remove Search History?
+          </button>
+        </div>
       </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>

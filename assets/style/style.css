@@ -1,0 +1,13 @@
+.list-group-item:hover {
+  font-size: 20px;
+  transition: all 0.3s ease-in-out;
+  background-color: #0275d8;
+  color: white;
+}
+
+#remove-history:hover {
+  font-size: 20px;
+  transition: all 0.3s ease-in-out;
+  background-color: #d9534f;
+  color: white;
+}
