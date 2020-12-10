@@ -1,4 +1,4 @@
-// get data from openweather api
+// get data from open weather api
 var getCityWeather = function (city) {
   var cityName = city;
   var apiUrl =
@@ -20,12 +20,20 @@ var getCityWeather = function (city) {
     .catch(function (error) {
       alert("Unable to connect to Open Weather");
     });
-  // add the city name to our history list
-  var listEl = document.createElement("li");
-  listEl.classList = "list-group-item";
-  listEl.setAttribute("data-city", cityName);
-  listEl.textContent = cityName;
-  $(".search-history").append(listEl);
+  // get array of current history
+  var currentHistory = [];
+  $(".search-history li").each(function () {
+    currentHistory.push($(this).attr("data-city"));
+  });
+
+  // add the city name to our history list if it is not already there
+  if (currentHistory.includes(cityName) === false) {
+    var listEl = document.createElement("li");
+    listEl.classList = "list-group-item";
+    listEl.setAttribute("data-city", cityName);
+    listEl.textContent = cityName;
+    $(".search-history").append(listEl);
+  }
   saveHistory();
 };
 
@@ -35,6 +43,10 @@ var loadHistory = function () {
   var history = localStorage.getItem("history");
   history = JSON.parse(history);
 
+  // check is history array is empty
+  if (!history) {
+    return;
+  }
   // append history onto page
   for (i = 0; i < history.length; i++) {
     var listEl = document.createElement("li");
@@ -57,11 +69,14 @@ var saveHistory = function () {
   $(".search-history li").each(function () {
     historyArr.push($(this).attr("data-city"));
   });
-
+  //remove duplicates
+  historyArr = [...new Set(historyArr)];
+  console.log(historyArr);
   // push array into localstorage
   localStorage.setItem("history", JSON.stringify(historyArr));
 };
 
+// send text entry from client to weather api as a city
 $("#button-addon2").on("click", function () {
   var cityName = $(".form-control").val();
   // check if the city name is blank or not
@@ -70,6 +85,8 @@ $("#button-addon2").on("click", function () {
     cityName =
       cityName.charAt(0).toUpperCase() + cityName.toLowerCase().slice(1);
 
+    //clear the text box
+    $(".form-control").val("");
     // call the function to fetch the api with the city name we passed in
     getCityWeather(cityName);
   } else {
@@ -78,5 +95,10 @@ $("#button-addon2").on("click", function () {
   }
 });
 
+// click a list element to pass that as a city to the weather api
+$("body").on("click", ".list-group-item", function () {
+  var cityName = $(this).attr("data-city");
+  getCityWeather(cityName);
+});
 // load history list from local storage on page load
 loadHistory();
