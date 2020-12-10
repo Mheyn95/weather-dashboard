@@ -7,8 +7,8 @@ An online dashboard where a client can search for a city and can see what the cu
 ## Built With
 
 - HTML
-- CSS
-- JavaScript
+- CSS (Bootstrap)
+- JavaScript (jQuery)
 
 ## Website
 
