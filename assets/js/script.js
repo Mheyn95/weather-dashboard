@@ -43,13 +43,14 @@ var weatherData = function (passedData) {
       // request was successful
       if (response.ok) {
         response.json().then(function (data) {
+          console.log(data);
           var cityObj = {
             name: passedData.name,
-            date: moment().format("MMMM Do, YYYY"),
+            date: moment.unix(data.current.dt).format("(M/DD/YYYY)"),
             icon: data.current.weather[0].icon,
             temp: data.current.temp,
             humidity: data.current.humidity,
-            wideSpeed: data.current.wind_speed,
+            windSpeed: data.current.wind_speed,
             uvIndex: data.current.uvi,
           };
           displayCurrentData(cityObj);
@@ -67,6 +68,37 @@ var weatherData = function (passedData) {
 // get current weather data from fetch function
 var displayCurrentData = function (dataObj) {
   console.log(dataObj);
+
+  // clear the data card
+  $("#current-card").empty();
+
+  // add the name and date for the header ADD THE ICON AS WELL
+  var currentHeader = document.createElement("h1");
+  currentHeader.classList = "current-header card-title p-3 mb-2";
+  currentHeader.textContent = dataObj.name + " " + dataObj.date;
+  $("#current-card").append(currentHeader);
+
+  // get icon from url
+  var currentIcon = document.createElement("img");
+  currentIcon.src =
+    "http://openweathermap.org/img/wn/" + dataObj.icon + "@2x.png";
+  $(".current-header").append(currentIcon);
+
+  // get a list of the other weather metrics
+  // create array to loop through and populate a list
+  var metricArray = [
+    "Temperature: " + dataObj.temp + " ℉",
+    "Humidity: " + dataObj.humidity + "%",
+    "Wind Speed: " + dataObj.windSpeed + " MPH",
+    "UV Index: " + dataObj.uvIndex,
+  ];
+  // create loop to populate list
+  for (i = 0; i < metricArray.length; i++) {
+    var listEl = document.createElement("li");
+    listEl.classList = "current-data-list p-3 mb-2";
+    listEl.textContent = metricArray[i];
+    $("#current-card").append(listEl);
+  }
 };
 // add to history list
 var addLi = function (cityName) {
@@ -147,6 +179,7 @@ $("#button-addon2").on("click", function () {
 // on click remove the li elements from page and clear storage
 $("#remove-history").on("click", function () {
   $(".search-history").empty();
+  $("#current-card").empty();
   saveHistory();
 });
 

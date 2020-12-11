@@ -11,3 +11,7 @@
   background-color: #d9534f;
   color: white;
 }
+
+.current-data-list {
+  list-style-type: none;
+}
