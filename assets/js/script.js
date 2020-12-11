@@ -114,7 +114,7 @@ var addLi = function (cityName) {
     listEl.classList = "list-group-item p-3 mb-2";
     listEl.setAttribute("data-city", cityName);
     listEl.textContent = cityName;
-    $(".search-history").append(listEl);
+    $(".search-history").prepend(listEl);
   }
   saveHistory();
 };
@@ -132,7 +132,7 @@ var loadHistory = function () {
   // append history onto page
   for (i = 0; i < history.length; i++) {
     var listEl = document.createElement("li");
-    listEl.classList = "list-group-item p-3 mb-2";
+    listEl.classList = "list-group-item p-3 mb-2 align-top";
     listEl.setAttribute("data-city", history[i]);
     listEl.textContent = history[i];
     $(".search-history").append(listEl);
