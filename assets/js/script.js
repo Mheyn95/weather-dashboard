@@ -12,12 +12,12 @@ var getCity = function (city) {
         response.json().then(function (data) {
           // create obj with data we will need for other fetches
           cityName = data.name;
-          var latLon = {
+          var passedData = {
             lat: data.coord.lat,
             lon: data.coord.lon,
             name: data.name,
           };
-          uvIndexFunc(latLon);
+          weatherData(passedData);
         });
         addLi(cityName);
       } else {
@@ -30,36 +30,6 @@ var getCity = function (city) {
     });
 };
 
-// get data for UV index
-var uvIndexFunc = function (latLon) {
-  var apiUrl =
-    "http://api.openweathermap.org/data/2.5/uvi?lat=" +
-    latLon.lat +
-    "&lon=" +
-    latLon.lon +
-    "&appid=2917f972769da991046e2c6ed6581b39";
-  fetch(apiUrl)
-    .then(function (response) {
-      // request was successful
-      if (response.ok) {
-        response.json().then(function (data) {
-          var nextData = {
-            uvIndex: data.value,
-            lat: latLon.lat,
-            lon: latLon.lon,
-            name: latLon.name,
-          };
-          weatherData(nextData);
-        });
-      } else {
-        alert("Error: " + response.statusText);
-        return;
-      }
-    })
-    .catch(function (error) {
-      alert("Unable to connect to Open Weather");
-    });
-};
 // get all weather data
 var weatherData = function (passedData) {
   var apiUrl =
@@ -73,8 +43,16 @@ var weatherData = function (passedData) {
       // request was successful
       if (response.ok) {
         response.json().then(function (data) {
-          console.log(data);
-          console.log(passedData.name);
+          var cityObj = {
+            name: passedData.name,
+            date: moment().format("MMMM Do, YYYY"),
+            icon: data.current.weather[0].icon,
+            temp: data.current.temp,
+            humidity: data.current.humidity,
+            wideSpeed: data.current.wind_speed,
+            uvIndex: data.current.uvi,
+          };
+          displayCurrentData(cityObj);
         });
       } else {
         alert("Error: " + response.statusText);
@@ -84,6 +62,11 @@ var weatherData = function (passedData) {
     .catch(function (error) {
       alert("Unable to connect to Open Weather");
     });
+};
+
+// get current weather data from fetch function
+var displayCurrentData = function (dataObj) {
+  console.log(dataObj);
 };
 // add to history list
 var addLi = function (cityName) {
