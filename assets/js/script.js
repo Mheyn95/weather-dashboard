@@ -43,17 +43,18 @@ var weatherData = function (passedData) {
       // request was successful
       if (response.ok) {
         response.json().then(function (data) {
-          console.log(data);
           var cityObj = {
             name: passedData.name,
-            date: moment.unix(data.current.dt).format("(M/DD/YYYY)"),
+            date: moment.unix(data.current.dt).format("MMM. Do YYYY"),
             icon: data.current.weather[0].icon,
             temp: data.current.temp,
             humidity: data.current.humidity,
             windSpeed: data.current.wind_speed,
             uvIndex: data.current.uvi,
           };
-          displayCurrentData(cityObj);
+          //store future data
+          var forecastData = data.daily;
+          displayCurrentData(cityObj, forecastData);
         });
       } else {
         alert("Error: " + response.statusText);
@@ -66,16 +67,14 @@ var weatherData = function (passedData) {
 };
 
 // get current weather data from fetch function
-var displayCurrentData = function (dataObj) {
-  console.log(dataObj);
-
+var displayCurrentData = function (dataObj, forecastData) {
   // clear the data card
   $("#current-card").empty();
 
-  // add the name and date for the header ADD THE ICON AS WELL
+  // add the name and date for the header
   var currentHeader = document.createElement("h1");
   currentHeader.classList = "current-header card-title p-3 mb-2";
-  currentHeader.textContent = dataObj.name + " " + dataObj.date;
+  currentHeader.textContent = dataObj.name + ", " + dataObj.date;
   $("#current-card").append(currentHeader);
 
   // get icon from url
@@ -99,6 +98,57 @@ var displayCurrentData = function (dataObj) {
     listEl.textContent = metricArray[i];
     $("#current-card").append(listEl);
   }
+  displayForecastData(forecastData);
+};
+
+var displayForecastData = function (forecastData) {
+  // clear the forecast div
+  $("#forecast-div").empty();
+  // initiate array to hold the new object data
+  var forecastArr = [];
+  //loop through data to get what we need and push it to an array for the next 5 days
+  for (i = 1; i < 6; i++) {
+    var forecastObj = {
+      date: moment.unix(forecastData[i].dt).format("MMM. Do YYYY"),
+      icon: forecastData[i].weather[0].icon,
+      temp: "Temp: " + forecastData[i].temp.day + " ℉",
+      humidity: "Humidity: " + forecastData[i].humidity + "%",
+    };
+    forecastArr.push(forecastObj);
+  }
+  //loop through array to add its data to page in cards
+  for (i = 0; i < forecastArr.length; i++) {
+    var forecastCardEl = document.createElement("div");
+    forecastCardEl.classList =
+      "forecast-card-El col-12 col-lg-2 card mb-2 p-3 bg-primary text-white";
+
+    //create date header and append it to forecastcardEl
+    var dateHeader = document.createElement("h4");
+    dateHeader.classList = "current-header p-3 mb-2";
+    dateHeader.textContent = forecastArr[i].date;
+    forecastCardEl.appendChild(dateHeader);
+
+    //create img to hold icon and append it to forecastcardEl
+    var forecastIcon = document.createElement("img");
+    forecastIcon.src =
+      "http://openweathermap.org/img/wn/" + forecastArr[i].icon + "@2x.png";
+    forecastIcon.classList = "forecast-icon";
+    forecastCardEl.appendChild(forecastIcon);
+
+    //create li with the rest of the data
+    var listTempEl = document.createElement("li");
+    listTempEl.classList = "forecast-data-list p-3 mb-2";
+    listTempEl.textContent = forecastArr[i].temp;
+    forecastCardEl.appendChild(listTempEl);
+
+    var listHumidEl = document.createElement("li");
+    listHumidEl.classList = "forecast-data-list p-3 mb-2";
+    listHumidEl.textContent = forecastArr[i].humidity;
+    forecastCardEl.appendChild(listHumidEl);
+
+    //add the cards to the page
+    $("#forecast-div").append(forecastCardEl);
+  }
 };
 // add to history list
 var addLi = function (cityName) {
@@ -111,7 +161,7 @@ var addLi = function (cityName) {
   // add the city name to our history list if it is not already there
   if (currentHistory.includes(cityName) === false) {
     var listEl = document.createElement("li");
-    listEl.classList = "list-group-item p-3 mb-2";
+    listEl.classList = "list-group-item p-3";
     listEl.setAttribute("data-city", cityName);
     listEl.textContent = cityName;
     $(".search-history").prepend(listEl);
@@ -132,7 +182,7 @@ var loadHistory = function () {
   // append history onto page
   for (i = 0; i < history.length; i++) {
     var listEl = document.createElement("li");
-    listEl.classList = "list-group-item p-3 mb-2 align-top";
+    listEl.classList = "list-group-item p-3 align-top";
     listEl.setAttribute("data-city", history[i]);
     listEl.textContent = history[i];
     $(".search-history").append(listEl);
@@ -180,6 +230,7 @@ $("#button-addon2").on("click", function () {
 $("#remove-history").on("click", function () {
   $(".search-history").empty();
   $("#current-card").empty();
+  $("#forecast-div").empty();
   saveHistory();
 });
 

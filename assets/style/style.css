@@ -12,6 +12,21 @@
   color: white;
 }
 
-.current-data-list {
+.current-data-list,
+.forecast-data-list {
   list-style-type: none;
+}
+
+.forecast-icon {
+  width: 25%;
+}
+
+#forecast-div {
+  justify-content: space-around;
+}
+
+@media screen and (max-width: 991px) {
+  .forecast-icon {
+    width: 10%;
+  }
 }
