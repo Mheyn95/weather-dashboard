@@ -84,10 +84,26 @@ var displayCurrentData = function (dataObj, forecastData) {
   $(".current-header").append(currentIcon);
 
   //add a background to the UV index value WE NEED TO MAKE THIS DYNAMICALLY CHANGE CLASSES
+
+  // if statement to select the correct class based on uv index levels
+  var uvClass = "";
+  if (dataObj.uvIndex < 2) {
+    uvClass = "low";
+  } else if (dataObj.uvIndex < 6) {
+    uvClass = "moderate";
+  } else if (dataObj.uvIndex < 8) {
+    uvClass = "high";
+  } else if (dataObj.uvIndex < 8) {
+    uvClass = "veryhigh";
+  } else {
+    uvClass = "extreme";
+  }
   var uvEl = document.createElement("li");
   uvEl.classList = "current-data-list p-3 mb-2";
   uvEl.innerHTML =
-    "<p id='test'>UV Index:<span class='extreme'>" +
+    "<p id='test'>UV Index:<span class=" +
+    uvClass +
+    ">" +
     dataObj.uvIndex +
     "</span></p>";
 
