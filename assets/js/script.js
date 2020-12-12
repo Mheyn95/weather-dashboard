@@ -83,13 +83,20 @@ var displayCurrentData = function (dataObj, forecastData) {
     "http://openweathermap.org/img/wn/" + dataObj.icon + "@2x.png";
   $(".current-header").append(currentIcon);
 
+  //add a background to the UV index value WE NEED TO MAKE THIS DYNAMICALLY CHANGE CLASSES
+  var uvEl = document.createElement("li");
+  uvEl.classList = "current-data-list p-3 mb-2";
+  uvEl.innerHTML =
+    "<p id='test'>UV Index:<span class='extreme'>" +
+    dataObj.uvIndex +
+    "</span></p>";
+
   // get a list of the other weather metrics
   // create array to loop through and populate a list
   var metricArray = [
     "Temperature: " + dataObj.temp + " ℉",
     "Humidity: " + dataObj.humidity + "%",
     "Wind Speed: " + dataObj.windSpeed + " MPH",
-    "UV Index: " + dataObj.uvIndex,
   ];
   // create loop to populate list
   for (i = 0; i < metricArray.length; i++) {
@@ -98,6 +105,8 @@ var displayCurrentData = function (dataObj, forecastData) {
     listEl.textContent = metricArray[i];
     $("#current-card").append(listEl);
   }
+
+  $("#current-card").append(uvEl);
   displayForecastData(forecastData);
 };
 

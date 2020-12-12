@@ -25,6 +25,46 @@
   justify-content: space-around;
 }
 
+#test {
+  display: inline;
+  margin: 0px auto 0px auto;
+}
+
+.low {
+  display: inline;
+  margin: 0px auto 0px auto;
+  padding: 2px;
+  background-color: lightgreen;
+}
+
+.moderate {
+  display: inline;
+  margin: 0px auto 0px auto;
+  padding: 2px;
+  background-color: yellow;
+}
+
+.high {
+  display: inline;
+  margin: 0px auto 0px auto;
+  padding: 2px;
+  background-color: orange;
+}
+
+.veryhigh {
+  display: inline;
+  margin: 0px auto 0px auto;
+  padding: 2px;
+  background-color: red;
+}
+
+.extreme {
+  display: inline;
+  margin: 0px auto 0px auto;
+  padding: 2px;
+  background-color: violet;
+}
+
 @media screen and (max-width: 991px) {
   .forecast-icon {
     width: 10%;
