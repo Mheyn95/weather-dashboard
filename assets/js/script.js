@@ -1,6 +1,7 @@
 // get data from open weather api
 var getCity = function (city) {
   var cityName = city;
+  //search the first api using the city name provided in order to get the lat and lon for the next api fetch
   var apiUrl =
     "https://api.openweathermap.org/data/2.5/weather?q=" +
     cityName +
@@ -10,15 +11,17 @@ var getCity = function (city) {
       // request was successful
       if (response.ok) {
         response.json().then(function (data) {
-          // create obj with data we will need for other fetches
+          // create obj with data we will need for other fetch
           cityName = data.name;
           var passedData = {
             lat: data.coord.lat,
             lon: data.coord.lon,
             name: data.name,
           };
+          // pass this obj to the function to fetch the next api call to get the rest of the data
           weatherData(passedData);
         });
+        // call function to add the city name to the list items in the search history
         addLi(cityName);
       } else {
         alert("Error: " + response.statusText);
@@ -43,6 +46,7 @@ var weatherData = function (passedData) {
       // request was successful
       if (response.ok) {
         response.json().then(function (data) {
+          // get an object of the city we searched and attach all the data we need
           var cityObj = {
             name: passedData.name,
             date: moment.unix(data.current.dt).format("MMM. Do YYYY"),
@@ -54,6 +58,7 @@ var weatherData = function (passedData) {
           };
           //store future data
           var forecastData = data.daily;
+          // call function to display the current data and pass the forecast data through as well to be used later
           displayCurrentData(cityObj, forecastData);
         });
       } else {
@@ -83,8 +88,7 @@ var displayCurrentData = function (dataObj, forecastData) {
     "http://openweathermap.org/img/wn/" + dataObj.icon + "@2x.png";
   $(".current-header").append(currentIcon);
 
-  //add a background to the UV index value WE NEED TO MAKE THIS DYNAMICALLY CHANGE CLASSES
-
+  //add a background to the UV index value
   // if statement to select the correct class based on uv index levels
   var uvClass = "";
   if (dataObj.uvIndex < 2) {
@@ -98,6 +102,7 @@ var displayCurrentData = function (dataObj, forecastData) {
   } else {
     uvClass = "extreme";
   }
+  //create a list element for the uv index item
   var uvEl = document.createElement("li");
   uvEl.classList = "current-data-list p-3 mb-2";
   uvEl.innerHTML =
@@ -121,8 +126,9 @@ var displayCurrentData = function (dataObj, forecastData) {
     listEl.textContent = metricArray[i];
     $("#current-card").append(listEl);
   }
-
+  // append the uv list item we created from before
   $("#current-card").append(uvEl);
+  // call the function to populate the forecast data and pass the forecast data array of objs
   displayForecastData(forecastData);
 };
 
@@ -191,6 +197,7 @@ var addLi = function (cityName) {
     listEl.textContent = cityName;
     $(".search-history").prepend(listEl);
   }
+  // run function to update local storage with the current history
   saveHistory();
 };
 
@@ -233,22 +240,30 @@ var saveHistory = function () {
 };
 
 // send text entry from client to weather api as a city
-$("#button-addon2").on("click", function () {
-  var cityName = $(".form-control").val().trim();
-  // check if the city name is blank or not
-  if (cityName) {
-    // convert the name to to be lower case with the first letter uppercase
-    cityName =
-      cityName.charAt(0).toUpperCase() + cityName.toLowerCase().slice(1);
+$("document").ready(function () {
+  $("#button-addon2").on("click", function () {
+    var cityName = $(".form-control").val().trim();
+    // check if the city name is blank or not
+    if (cityName) {
+      // convert the name to to be lower case with the first letter uppercase
+      cityName =
+        cityName.charAt(0).toUpperCase() + cityName.toLowerCase().slice(1);
 
-    //clear the text box
-    $(".form-control").val("");
-    // call the function to fetch the api with the city name we passed in
-    getCity(cityName);
-  } else {
-    alert("Please enter a city name!");
-    return;
-  }
+      //clear the text box
+      $(".form-control").val("");
+      // call the function to fetch the api with the city name we passed in
+      getCity(cityName);
+    } else {
+      alert("Please enter a city name!");
+      return;
+    }
+  });
+  $(".form-control").keypress(function (e) {
+    if (e.which == 13) {
+      //Enter key pressed
+      $("#button-addon2").click(); //Trigger search button click event
+    }
+  });
 });
 
 // on click remove the li elements from page and clear storage
